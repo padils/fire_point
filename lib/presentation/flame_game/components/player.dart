@@ -1,6 +1,5 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:game_test/flame_game/components/point.dart';
 import '../helpers/direction.dart';
 import 'package:flame/sprite.dart';
 

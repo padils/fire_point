@@ -1,9 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:game_test/routes/routes.dart';
 import 'package:provider/provider.dart';
 import 'provider/settings_provider.dart';
 
-void main() {
+void main() async {
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
   runApp(
     MultiProvider(
       providers: [
