@@ -37,8 +37,6 @@ class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
   @override
   void onMount() {
     super.onMount();
-    // When the world is mounted in the game we add a back button widget as an
-    // overlay so that the player can go back to the previous screen.
     overlays.add(GameScreen.pauseKey);
   }
 
@@ -143,7 +141,7 @@ class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
         provider.worldSize,
         player.direction,
         player.position + player.size / 2,
-        player.isRunning ? provider.ballSpeed + 1 : provider.ballSpeed,
+        player.isRunning ? provider.ballSpeed + 5 : provider.ballSpeed,
       ),
     );
   }

@@ -22,12 +22,6 @@ class _GameScreenState extends State<GameScreen> {
   late MyGame game;
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     game = MyGame(
       context.read<SettingsProvider>(),

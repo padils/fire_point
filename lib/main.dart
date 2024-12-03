@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'provider/settings_provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
