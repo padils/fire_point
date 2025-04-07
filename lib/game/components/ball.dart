@@ -1,7 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:game_test/presentation/flame_game/helpers/direction.dart';
+import 'package:game_test/game/helpers/direction.dart';
 
 class Ball extends SpriteComponent with HasGameReference, CollisionCallbacks {
   Ball(
@@ -22,7 +22,6 @@ class Ball extends SpriteComponent with HasGameReference, CollisionCallbacks {
 
   final Vector2 maxSizeWorld;
   final Vector2 initPosition;
-
 
   final double rotationSpeed = 40 * 3.14;
 

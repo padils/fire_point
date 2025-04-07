@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:game_test/constant/assets.dart';
-import 'package:game_test/presentation/main_menu/screens/main_menu.dart';
+import 'package:game_test/presentation/shared/menu_item_button.dart';
 import 'package:game_test/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -46,6 +46,7 @@ class Settings extends StatelessWidget {
                         context.watch<SettingsProvider>().currentType == e,
                     onPressed: () {
                       context.read<SettingsProvider>().setType(e);
+                      Navigator.pop(context);
                     },
                   ),
                 ),

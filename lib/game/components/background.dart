@@ -1,8 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
-import 'package:flame/parallax.dart';
-import 'package:flutter/material.dart';
 
 class Background extends SpriteComponent {
   final Vector2 maxSizeWorld;

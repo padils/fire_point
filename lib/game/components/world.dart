@@ -6,23 +6,26 @@ import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:game_test/presentation/flame_game/components/ball.dart';
-import 'package:game_test/presentation/flame_game/components/player.dart';
-import 'package:game_test/presentation/flame_game/components/point.dart';
-import 'package:game_test/presentation/flame_game/components/score.dart';
-import 'package:game_test/presentation/flame_game/helpers/direction.dart';
-import 'package:game_test/presentation/flame_game/screens/game_screen.dart';
+import 'package:game_test/game/components/ball.dart';
+import 'package:game_test/game/components/score.dart';
+import 'package:game_test/game/helpers/direction.dart';
+import 'package:game_test/game/game_screen.dart';
+import 'package:game_test/game/components/player.dart';
+import 'package:game_test/game/components/enemy.dart';
 import 'package:game_test/provider/settings_provider.dart';
 import 'package:leap/leap.dart';
-import 'components/background.dart';
 
-class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
+import 'background.dart';
+
+class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
   final scoreNotifier = ValueNotifier<int>(0);
   final SettingsProvider provider;
   final Vector2 screenSize;
 
-  MyGame(this.provider, this.screenSize)
-      : super(
+  MyWorld(
+    this.provider,
+    this.screenSize,
+  ) : super(
           tileSize: 20,
           configuration: const LeapConfiguration(
             tiled: TiledOptions(
@@ -33,16 +36,19 @@ class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
         );
   late Player player;
 
-
   @override
   void onMount() {
     super.onMount();
     overlays.add(GameScreen.pauseKey);
+    overlays.add(GameScreen.leftBottomController);
+    overlays.add(GameScreen.rightBottomController);
   }
 
   @override
   void onRemove() {
     overlays.remove(GameScreen.pauseKey);
+    overlays.add(GameScreen.leftBottomController);
+    overlays.add(GameScreen.rightBottomController);
   }
 
   @override
@@ -75,7 +81,7 @@ class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
     world.add(player);
     world.add(
       SpawnComponent(
-        factory: (_) => Ember(_addScore, pointLiveTime),
+        factory: (_) => Enemy(_addScore, pointLiveTime),
         period: 1.0,
         area: Rectangle.fromPoints(
           Vector2(maxSizeWorld.x, 0),
@@ -90,8 +96,7 @@ class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
       Vector2.all(30),
     );
     Duration timerTime = provider.timer;
-    DateTime dateTime =
-        DateTime.fromMicrosecondsSinceEpoch(timerTime.inMicroseconds);
+    DateTime dateTime = DateTime.fromMicrosecondsSinceEpoch(timerTime.inMicroseconds);
     final gameTimer = TextComponent(
       text: 'Timer: ${dateTime.minute}:${dateTime.second}',
       position: Vector2(30, 60),
@@ -104,13 +109,13 @@ class MyGame extends LeapGame with HasCollisionDetection, KeyboardEvents {
       ),
     );
 
-
     camera.viewport.add(scoreComponent);
     camera.viewport.add(gameTimer);
     Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (paused) return;
       dateTime = dateTime.subtract(const Duration(seconds: 1));
       gameTimer.text = 'Timer: ${dateTime.minute}:${dateTime.second}';
-      if (timer.tick == timerTime.inSeconds) {
+      if (dateTime.minute * 60 + dateTime.second >= timerTime.inSeconds) {
         timer.cancel();
         pauseEngine();
         overlays.add(GameScreen.timeLeftKey);

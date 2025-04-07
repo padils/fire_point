@@ -88,28 +88,20 @@ class Player extends SpriteAnimationComponent with HasGameRef {
       srcSize: Vector2(84.0, 110.0),
     );
 
-    _runDownAnimation =
-        spriteSheet.createAnimation(row: 0, stepTime: _animationSpeed, to: 4);
+    _runDownAnimation = spriteSheet.createAnimation(row: 0, stepTime: _animationSpeed, to: 4);
 
-    _runLeftAnimation =
-        spriteSheet.createAnimation(row: 2, stepTime: _animationSpeed, to: 4);
+    _runLeftAnimation = spriteSheet.createAnimation(row: 2, stepTime: _animationSpeed, to: 4);
 
-    _runUpAnimation =
-        spriteSheet.createAnimation(row: 1, stepTime: _animationSpeed, to: 4);
+    _runUpAnimation = spriteSheet.createAnimation(row: 1, stepTime: _animationSpeed, to: 4);
 
-    _runRightAnimation =
-        spriteSheet.createAnimation(row: 3, stepTime: _animationSpeed, to: 4);
+    _runRightAnimation = spriteSheet.createAnimation(row: 3, stepTime: _animationSpeed, to: 4);
 
-    _standingDownAnimation =
-        spriteSheet.createAnimation(row: 0, stepTime: _animationSpeed, to: 1);
+    _standingDownAnimation = spriteSheet.createAnimation(row: 0, stepTime: _animationSpeed, to: 1);
     _standingAnimation = _standingDownAnimation;
 
-    _standingUpAnimation =
-        spriteSheet.createAnimation(row: 1, stepTime: _animationSpeed, to: 1);
-    _standingLeftAnimation =
-        spriteSheet.createAnimation(row: 2, stepTime: _animationSpeed, to: 1);
-    _standingRightAnimation =
-        spriteSheet.createAnimation(row: 3, stepTime: _animationSpeed, to: 1);
+    _standingUpAnimation = spriteSheet.createAnimation(row: 1, stepTime: _animationSpeed, to: 1);
+    _standingLeftAnimation = spriteSheet.createAnimation(row: 2, stepTime: _animationSpeed, to: 1);
+    _standingRightAnimation = spriteSheet.createAnimation(row: 3, stepTime: _animationSpeed, to: 1);
   }
 
   void moveUp(double delta) {

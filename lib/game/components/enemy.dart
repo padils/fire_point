@@ -1,14 +1,14 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:game_test/presentation/flame_game/components/ball.dart';
+import 'package:game_test/game/components/ball.dart';
 
-class Ember extends SpriteAnimationComponent
+class Enemy extends SpriteAnimationComponent
     with HasGameReference, CollisionCallbacks {
   final void Function() addScore;
   final int pointLiveTime;
 
-  Ember(
+  Enemy(
     this.addScore,
     this.pointLiveTime,
   ) : super(

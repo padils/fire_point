@@ -1,6 +1,6 @@
-import 'package:game_test/presentation/flame_game/screens/game_screen.dart';
-import 'package:game_test/presentation/main_menu/screens/main_menu.dart';
-import 'package:game_test/presentation/settings/screens/settings.dart';
+import 'package:game_test/game/game_screen.dart';
+import 'package:game_test/presentation/main_menu/main_menu.dart';
+import 'package:game_test/presentation/settings/settings.dart';
 
 final routes = {
   '/': (context) => const Menu(),

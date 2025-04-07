@@ -2,8 +2,10 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 class Score extends TextComponent {
-  Score(this.scoreText, Vector2 position,)
-      : super(
+  Score(
+    this.scoreText,
+    Vector2 position,
+  ) : super(
           text: scoreText,
           position: position,
           textRenderer: TextPaint(
