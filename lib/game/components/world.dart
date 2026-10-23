@@ -3,7 +3,8 @@ import 'dart:math';
 
 import 'package:flame/components.dart' hide Timer;
 import 'package:flame/events.dart';
-import 'package:flame/experimental.dart';
+import 'package:flame/experimental.dart' show Rectangle;
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:game_test/game/components/ball.dart';
@@ -13,28 +14,17 @@ import 'package:game_test/game/game_screen.dart';
 import 'package:game_test/game/components/player.dart';
 import 'package:game_test/game/components/enemy.dart';
 import 'package:game_test/provider/settings_provider.dart';
-import 'package:leap/leap.dart';
 
 import 'background.dart';
 
-class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
+class MyWorld extends FlameGame with HasCollisionDetection, KeyboardEvents {
   final scoreNotifier = ValueNotifier<int>(0);
   final SettingsProvider provider;
-  final Vector2 screenSize;
 
-  MyWorld(
-    this.provider,
-    this.screenSize,
-  ) : super(
-          tileSize: 20,
-          configuration: const LeapConfiguration(
-            tiled: TiledOptions(
-              atlasMaxX: 846,
-              atlasMaxY: 846,
-            ),
-          ),
-        );
+  MyWorld(this.provider);
+
   late Player player;
+  Timer? _countdownTimer;
 
   @override
   void onMount() {
@@ -46,9 +36,12 @@ class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
 
   @override
   void onRemove() {
+    _countdownTimer?.cancel();
+    scoreNotifier.dispose();
     overlays.remove(GameScreen.pauseKey);
-    overlays.add(GameScreen.leftBottomController);
-    overlays.add(GameScreen.rightBottomController);
+    overlays.remove(GameScreen.leftBottomController);
+    overlays.remove(GameScreen.rightBottomController);
+    super.onRemove();
   }
 
   @override
@@ -64,21 +57,14 @@ class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
 
   @override
   Future<void> onLoad() async {
+    await super.onLoad();
     final goalForWin = provider.goalForWin;
     final pointLiveTime = provider.pointLiveTime;
     final maxSizeWorld = provider.worldSize;
-    player = Player(
-      addScore: _addScore,
-      maxSizeWorld: maxSizeWorld,
-    );
+    player = Player(addScore: _addScore, maxSizeWorld: maxSizeWorld);
+    await world.add(Background(maxSizeWorld: maxSizeWorld));
+    await world.add(player);
     camera.follow(player);
-
-    world.add(
-      Background(
-        maxSizeWorld: maxSizeWorld,
-      ),
-    );
-    world.add(player);
     world.add(
       SpawnComponent(
         factory: (_) => Enemy(_addScore, pointLiveTime),
@@ -91,14 +77,10 @@ class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
       ),
     );
 
-    final scoreComponent = Score(
-      'Embers: 0 / $goalForWin',
-      Vector2.all(30),
-    );
-    Duration timerTime = provider.timer;
-    DateTime dateTime = DateTime.fromMicrosecondsSinceEpoch(timerTime.inMicroseconds);
+    final scoreComponent = Score('Embers: 0 / $goalForWin', Vector2.all(30));
+    var remainingSeconds = provider.timer.inSeconds;
     final gameTimer = TextComponent(
-      text: 'Timer: ${dateTime.minute}:${dateTime.second}',
+      text: _formatTimer(remainingSeconds),
       position: Vector2(30, 60),
       textRenderer: TextPaint(
         style: const TextStyle(
@@ -111,18 +93,19 @@ class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
 
     camera.viewport.add(scoreComponent);
     camera.viewport.add(gameTimer);
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (paused) return;
-      dateTime = dateTime.subtract(const Duration(seconds: 1));
-      gameTimer.text = 'Timer: ${dateTime.minute}:${dateTime.second}';
-      if (dateTime.minute * 60 + dateTime.second >= timerTime.inSeconds) {
+      remainingSeconds--;
+      gameTimer.text = _formatTimer(remainingSeconds);
+      if (remainingSeconds <= 0) {
         timer.cancel();
         pauseEngine();
         overlays.add(GameScreen.timeLeftKey);
       }
     });
     scoreNotifier.addListener(() {
-      if (scoreNotifier.value == goalForWin) {
+      if (scoreNotifier.value >= goalForWin) {
+        _countdownTimer?.cancel();
         pauseEngine();
         overlays.add(GameScreen.winDialogKey);
       }
@@ -152,4 +135,10 @@ class MyWorld extends LeapGame with HasCollisionDetection, KeyboardEvents {
   }
 
   void _addScore() => scoreNotifier.value++;
+
+  String _formatTimer(int totalSeconds) {
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+    return 'Timer: $minutes:${seconds.toString().padLeft(2, '0')}';
+  }
 }

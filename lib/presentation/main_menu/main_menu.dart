@@ -15,10 +15,7 @@ class Menu extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: Image.asset(
-              Assets.menuBackground,
-              fit: BoxFit.fill,
-            ),
+            child: Image.asset(Assets.menuBackground, fit: BoxFit.fill),
           ),
           Center(
             child: Column(
@@ -31,15 +28,17 @@ class Menu extends StatelessWidget {
                   },
                 ),
                 MenuItem(
-                    name: 'Settings',
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/settings');
-                    }),
+                  name: 'Settings',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/settings');
+                  },
+                ),
                 MenuItem(
-                    name: 'Exit',
-                    onPressed: () {
-                      SystemNavigator.pop();
-                    })
+                  name: 'Exit',
+                  onPressed: () {
+                    SystemNavigator.pop();
+                  },
+                ),
               ],
             ),
           ),

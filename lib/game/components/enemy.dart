@@ -1,20 +1,15 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:game_test/game/components/ball.dart';
 
 class Enemy extends SpriteAnimationComponent
     with HasGameReference, CollisionCallbacks {
   final void Function() addScore;
   final int pointLiveTime;
+  double _age = 0;
 
-  Enemy(
-    this.addScore,
-    this.pointLiveTime,
-  ) : super(
-          size: Vector2.all(80),
-          anchor: Anchor.center,
-        );
+  Enemy(this.addScore, this.pointLiveTime)
+    : super(size: Vector2.all(80), anchor: Anchor.center);
 
   @override
   Future<void> onLoad() async {
@@ -31,11 +26,12 @@ class Enemy extends SpriteAnimationComponent
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    Future.delayed(Duration(seconds: pointLiveTime), () {
+  void update(double dt) {
+    super.update(dt);
+    _age += dt;
+    if (_age >= pointLiveTime) {
       removeFromParent();
-    });
+    }
   }
 
   @override

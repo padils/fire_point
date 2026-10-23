@@ -26,19 +26,13 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    myWorld = MyWorld(
-      context.read<SettingsProvider>(),
-      Vector2(
-        MediaQuery.of(context).size.width,
-        MediaQuery.of(context).size.height,
-      ),
-    );
+    myWorld = MyWorld(context.read<SettingsProvider>());
     return Scaffold(
       body: Stack(
         alignment: AlignmentDirectional.center,
         children: [
           GameWidget(
-            key: UniqueKey(),
+            key: myWorldKey,
             backgroundBuilder: (context) => Opacity(
               opacity: 0.3,
               child: Image.asset(
@@ -56,161 +50,134 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  get overlayBuilderMap => {
-        GameScreen.winDialogKey: (BuildContext context, _) => Center(
-              child: Card(
-                elevation: 4,
-                child: SizedBox(
-                  height: 130,
-                  width: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text(
-                            'You\'ve won.\nChoose the next level',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      GSButton(
-                        onPressed: () async {
-                          await Navigator.pushNamed(
-                            context,
-                            '/settings',
-                          );
-                          _reloadGame();
-                        },
-                      ),
-                    ],
+  Map<String, Widget Function(BuildContext, MyWorld)> get overlayBuilderMap => {
+    GameScreen.winDialogKey: (BuildContext context, _) => Center(
+      child: Card(
+        elevation: 4,
+        child: SizedBox(
+          height: 130,
+          width: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    'You\'ve won.\nChoose the next level',
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-            ),
-        GameScreen.timeLeftKey: (BuildContext context, _) => Center(
-              child: Card(
-                elevation: 4,
-                child: SizedBox(
-                  height: 100,
-                  width: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text('Time\'s up. Try again!'),
-                        ),
-                      ),
-                      GSButton(
-                        onPressed: _reloadGame,
-                        text: 'GO!',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-        GameScreen.pauseKey: (BuildContext context, MyWorld myWorld) => Positioned(
-              top: 20,
-              right: 10,
-              child: IconButton(
-                onPressed: () {
-                  myWorld.paused = true;
-
-                  showDialog(
-                    context: context,
-                    builder: (c) => Center(
-                      child: Card(
-                        elevation: 4,
-                        child: SizedBox(
-                          height: 100,
-                          width: 220,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Text('What\'s wrong ?'),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  GSButton(
-                                    onPressed: () => Navigator.pushReplacementNamed(
-                                      context,
-                                      '/',
-                                    ),
-                                    text: 'Menu!',
-                                  ),
-                                  GSButton(
-                                    onPressed: () {
-                                      myWorld.paused = false;
-                                      Navigator.pop(context);
-                                    },
-                                    text: 'resume!',
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+              GSButton(
+                onPressed: () async {
+                  await Navigator.pushNamed(context, '/settings');
+                  _reloadGame();
                 },
-                icon: const Icon(
-                  Icons.pause,
-                  size: 30,
-                  color: Colors.white,
-                ),
               ),
-            ),
-        GameScreen.leftBottomController: (BuildContext context, _) => Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Joypad(
-                  onDirectionChanged: myWorld.onJoyPadDirectionChanged,
-                ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    GameScreen.timeLeftKey: (BuildContext context, _) => Center(
+      child: Card(
+        elevation: 4,
+        child: SizedBox(
+          height: 100,
+          width: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(child: Text('Time\'s up. Try again!')),
               ),
-            ),
-        GameScreen.rightBottomController: (BuildContext context, _) => Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Container(
+              GSButton(onPressed: _reloadGame, text: 'GO!'),
+            ],
+          ),
+        ),
+      ),
+    ),
+    GameScreen.pauseKey: (BuildContext context, MyWorld myWorld) => Positioned(
+      top: 20,
+      right: 10,
+      child: IconButton(
+        onPressed: () {
+          myWorld.paused = true;
+
+          showDialog(
+            context: context,
+            builder: (c) => Center(
+              child: Card(
+                elevation: 4,
+                child: SizedBox(
                   height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    // border: Border.all()
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                    ),
-                    onPressed: myWorld.trowBall,
-                    child: const SizedBox.shrink(),
+                  width: 220,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(child: Text('What\'s wrong ?')),
+                      ),
+                      Row(
+                        children: [
+                          GSButton(
+                            onPressed: () =>
+                                Navigator.pushReplacementNamed(context, '/'),
+                            text: 'Menu!',
+                          ),
+                          GSButton(
+                            onPressed: () {
+                              myWorld.paused = false;
+                              Navigator.pop(context);
+                            },
+                            text: 'resume!',
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-      };
+          );
+        },
+        icon: const Icon(Icons.pause, size: 30, color: Colors.white),
+      ),
+    ),
+    GameScreen.leftBottomController: (BuildContext context, _) => Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Joypad(onDirectionChanged: myWorld.onJoyPadDirectionChanged),
+      ),
+    ),
+    GameScreen.rightBottomController: (BuildContext context, _) => Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Container(
+          height: 100,
+          width: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            // border: Border.all()
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+            onPressed: myWorld.trowBall,
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    ),
+  };
 
   void _reloadGame() {
     setState(() {
       myWorldKey = UniqueKey();
-      myWorld = MyWorld(
-        context.read<SettingsProvider>(),
-        Vector2(
-          MediaQuery.of(context).size.width,
-          MediaQuery.of(context).size.height,
-        ),
-      );
     });
   }
 }

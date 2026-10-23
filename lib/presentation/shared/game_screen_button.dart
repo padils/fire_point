@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class GSButton extends StatelessWidget {
-  const GSButton({
-    super.key,
-    this.onPressed,
-    this.text,
-  });
+  const GSButton({super.key, this.onPressed, this.text});
 
   final void Function()? onPressed;
   final String? text;
@@ -19,9 +15,7 @@ class GSButton extends StatelessWidget {
           foregroundColor: const Color(0xFF7e2322),
         ),
         onPressed: onPressed,
-        child: Center(
-          child: Text(text ?? 'OK'),
-        ),
+        child: Center(child: Text(text ?? 'OK')),
       ),
     );
   }

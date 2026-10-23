@@ -1,12 +1,13 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'direction.dart';
 
 class Joypad extends StatefulWidget {
   final ValueChanged<Direction>? onDirectionChanged;
 
-  const Joypad({Key? key, this.onDirectionChanged}) : super(key: key);
+  const Joypad({super.key, this.onDirectionChanged});
 
   @override
   JoypadState createState() => JoypadState();
@@ -22,9 +23,7 @@ class JoypadState extends State<Joypad> {
       height: 120,
       width: 120,
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(60),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(60)),
         child: GestureDetector(
           onPanDown: onDragDown,
           onPanUpdate: onDragUpdate,
@@ -56,29 +55,16 @@ class JoypadState extends State<Joypad> {
   }
 
   void updateDelta(Offset newDelta) {
-    final newDirection = getDirectionFromOffset(newDelta);
+    final newDirection = Direction.fromOffset(newDelta);
 
     if (newDirection != direction) {
       direction = newDirection;
-      widget.onDirectionChanged!(direction);
+      widget.onDirectionChanged?.call(direction);
     }
 
     setState(() {
       delta = newDelta;
     });
-  }
-
-  Direction getDirectionFromOffset(Offset offset) {
-    if (offset.dx > 20) {
-      return Direction.right;
-    } else if (offset.dx < -20) {
-      return Direction.left;
-    } else if (offset.dy > 20) {
-      return Direction.down;
-    } else if (offset.dy < -20) {
-      return Direction.up;
-    }
-    return Direction.none;
   }
 
   void onDragDown(DragDownDetails d) {
@@ -96,10 +82,7 @@ class JoypadState extends State<Joypad> {
   void calculateDelta(Offset offset) {
     final newDelta = offset - const Offset(60, 60);
     updateDelta(
-      Offset.fromDirection(
-        newDelta.direction,
-        min(30, newDelta.distance),
-      ),
+      Offset.fromDirection(newDelta.direction, min(30, newDelta.distance)),
     );
   }
 }
